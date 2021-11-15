@@ -1,23 +1,12 @@
-import logo from './logo.svg';
 import './App.css';
+import CollapsibleSidebar from './components/Collapsible-Sidebar'
+import CreateForm from './components/ClientCreation-Form';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {true&&<CollapsibleSidebar/>}
+      <CreateForm/>
     </div>
   );
 }

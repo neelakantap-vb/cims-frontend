@@ -1,0 +1,56 @@
+.FormContainer{
+    position: absolute;
+    width: 80%;
+    height: 75%;
+    top: 15%;
+    left: 15%;
+    border: 3px solid rgb(216, 213, 213);
+}
+
+.form-header{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    margin: auto;
+    width: 95%;
+    border-bottom: 3px solid rgb(114, 114, 114);
+}
+
+.header-end{
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.header-end div{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+.form-body{
+    margin-top: 10px;
+    margin-left: 2%;
+    width: 90%;
+    height: 88%;
+    border: 1px solid rgb(221, 220, 220);
+}
+
+.contact-form{
+    width: 98%;
+    height: 40%;
+    margin: 1%;
+    border: rgb(221, 218, 218) 1px solid;
+}
+
+/* middle 4 fields */
+.align-form-fields{
+    width: 48%;
+    float: left;
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    margin-left: 1%;
+}
