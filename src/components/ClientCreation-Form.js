@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import {   TextField, Typography } from '@mui/material'
+import { TextField, Typography } from '@mui/material'
+import axios from 'axios'
 import { makeStyles } from '@material-ui/styles';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -11,8 +12,7 @@ import { Button } from '@mui/material';
 import Switch from '@mui/material/Switch';
 import '../styles/FormStyle.css'
 
-const useStyles = makeStyles({
-    
+const useStyles = makeStyles({  
     field1:{
         width:'98%',
         margin:'1%'
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 function CreateForm(){
 
     const classes = useStyles()
-    
+    const url = "http://localhost:4000//submitform"
     const [formData,setformData] = useState({
         designation:"",
         brandname:"",
@@ -64,18 +64,28 @@ function CreateForm(){
             email:"",
             contact_number:"",
             othercontact_number:"",
+
         },
+        othercontacts:[]
     })
-    
 
     const setformvalue=(e)=>{
         let new_form = {...formData}
-        {e.target.id
-            ? new_form[e.target.id] = e.target.value
-            : new_form[e.target.name] = e.target.value
-          }
+        new_form[e.target.name] = e.target.value
         setformData(new_form)
         console.log(new_form)
+    }
+
+    const submitForm = async(e) =>{
+        // e.preventDefault()
+        console.log(formData)
+        // try {
+        //     await Axios.post(url , {formData}) 
+        //     .then(res=>console.log(res))   
+        // } catch (error) {
+        //     console.log(error)
+        // }
+           
     }
 
     return(
@@ -88,9 +98,6 @@ function CreateForm(){
                     </h2>
                     
                     <div className="header-end">
-                        <Button variant="contained" color="success">
-                            Save
-                        </Button>
                         <div>
                             <p>Edit mode</p>
                             <Switch defaultChecked color="success" />
@@ -107,7 +114,7 @@ function CreateForm(){
                             className={classes.field1}
                             label="enter designation"
                             variant="outlined"
-                            id="designation"
+                            name="designation"
                             fullWidth
                             required
                             size="small"
@@ -122,7 +129,7 @@ function CreateForm(){
                                 className={classes.field2}
                                 label="enter name"
                                 variant="outlined"
-                                id="brandname"
+                                name="brandname"
                                 fullWidth
                                 required
                                 size="small"
@@ -138,7 +145,7 @@ function CreateForm(){
                                 className={classes.field2}
                                 label="enter domain/sector"
                                 variant="outlined"
-                                id="domain"
+                                name="domain"
                                 fullWidth
                                 required
                                 size="small"
@@ -154,7 +161,7 @@ function CreateForm(){
                                 className={classes.field2}
                                 label="enter location"
                                 variant="outlined"
-                                id="baselocation"
+                                name="baselocation"
                                 fullWidth
                                 required
                                 size="small"
@@ -191,12 +198,22 @@ function CreateForm(){
                             className={classes.field3}
                             label="Enter location"
                             variant="outlined"
-                            id="companyaddress"
+                            name="companyaddress"
                             fullWidth
                             required
                             size="small"
                             onChange={(e)=>{setformvalue(e)}}
                         />
+                        <Button
+                        onClick={submitForm}
+                        type="submit"
+                        variant="contained"
+                        color="success"
+                        id="save-btn"
+                        className={classes.button}
+                        >
+                        save
+                        </Button>
                         
                     </form>
                 
