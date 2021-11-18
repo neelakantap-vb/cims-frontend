@@ -2,10 +2,15 @@
     position: absolute;
     width: 80%;
     height: 75%;
-    top: 15%;
+    top: 20%;
     left: 15%;
-    border: 3px solid rgb(216, 213, 213);
+    overflow-y: auto;
+    border: 2px solid rgb(216, 213, 213);
 }
+
+.FormContainer::-webkit-scrollbar {
+    display: none;
+  }
 
 .form-header{
     display: flex;
@@ -35,31 +40,34 @@
     right: 0;
     margin-right: 20%;
     margin-top: 1%;
-
 }
-
 
 .form-body{
     margin-top: 10px;
     margin-left: 2%;
     width: 90%;
     height: 88%;
-    border: 1px solid rgb(221, 220, 220);
 }
 
 .contact-form{
     width: 98%;
-    height: 40%;
+    height: 45%;
     margin: 1%;
-    border: rgb(221, 218, 218) 1px solid;
+    margin-top:3%;
+    border: 1px solid rgb(216, 213, 213);
 }
 
 /* middle 4 fields */
-.align-form-fields{
+.align-form-fields,.right-float-fields{
     width: 48%;
     float: left;
     display: flex;
+    margin-top: .5%;
+    margin-bottom: .5%;
     justify-content: left;
     flex-direction: column;
+}
+
+.right-float-fields{
     margin-left: 1%;
 }
