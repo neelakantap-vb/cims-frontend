@@ -22,7 +22,8 @@ export default function ContactDetails() {
         n,
         handleOthers,
         addOthers,
-        handleAddOthers
+        handleAddOthers,
+        errors
     } = UseForm();
 
     const inputField = fields.map(field => {
@@ -36,9 +37,11 @@ export default function ContactDetails() {
                     id={field.id}
                     value={data[field.id]}
                     onChange={setformvalue}
+                    onBlur={setformvalue}
                     fullWidth
                     size="small"
-                    autoomplete="none"
+                    autoComplete="none"
+                    {...(errors['contacts'][value][field.id] && { error: true, helperText: errors['contacts'][value][field.id] })}
                 />
             </Grid>
         );
@@ -47,6 +50,47 @@ export default function ContactDetails() {
     const tabs = contacts.map(contact =>
         <Tab key={contact.title} label={contact.label} value={contact.title} sx={{textTransform: 'none'}}/>
     );
+    const dropDown = (
+        <Grid>
+            <FormControl size="small">
+                <Button 
+                    size="small" 
+                    id="othersBtn" 
+                    sx={{color: 'gray', borderColor: 'white'}} 
+                    variant="outlined"
+                    aria-haspopup="true"
+                    aria-controls="others"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                >
+                    <KeyboardArrowDownRoundedIcon sx={{fontSize: "2.5rem"}}/>
+                </Button>
+                <Menu
+                    id='others'
+                    sx={{maxHeight: 230, overflow: 'visible'}}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'othersBtn',
+                    }}
+                >
+                    {[...Array(n-3)].map((e, i) => {
+                        return(
+                            <MenuItem
+                                key={i+1}
+                                data-label={`Other Contact ${i+1}`}
+                                data-title={`otherContact${i+1}`}
+                                onClick={handleOthers}
+                            >
+                            {`Other Contact ${i+1}`}
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+            </FormControl>
+        </Grid>
+    );
 
     return(
         <Box sx={{width: '100%', typography: 'body1'}}>
@@ -54,52 +98,14 @@ export default function ContactDetails() {
                 <Box sx={{ borderTop: 2, borderBottom: 2, borderColor: 'divider' }}>
                     <TabList variant='scrollable' onChange={(e, newValue) => setValue(newValue)}>
                         {tabs}
-                        <Grid>
-                            <FormControl size="small">
-                                <Button 
-                                    size="small" 
-                                    id="othersBtn" 
-                                    sx={{color: 'gray', borderColor: 'white'}} 
-                                    variant="outlined"
-                                    aria-haspopup="true"
-                                    aria-controls="others"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    <KeyboardArrowDownRoundedIcon sx={{fontSize: "2.5rem"}}/>
-                                </Button>
-                                <Menu
-                                    id='others'
-                                    sx={{maxHeight: 230, overflow: 'visible'}}
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    MenuListProps={{
-                                        'aria-labelledby': 'othersBtn',
-                                    }}
-                                >
-                                    {[...Array(n-3)].map((e, i) => {
-                                        return(
-                                            <MenuItem
-                                                key={i+1}
-                                                data-label={`Other Contact ${i+1}`}
-                                                data-title={`otherContact${i+1}`}
-                                                onClick={handleOthers}
-                                            >
-                                            {`Other Contact ${i+1}`}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Menu>
-                            </FormControl>
-                        </Grid>
+                        {n>4? dropDown : <></>}
                         <Grid container>
                             <Button
                                 id="addOthersBtn" 
                                 sx={{color: 'gray', borderColor: 'white'}} 
-                                variant={addOthers?"contained":"outlined"}
+                                variant={!addOthers?"contained":"outlined"}
                                 onClick={handleAddOthers}
-                                disabled={addOthers}
+                                disabled={!addOthers}
                             >
                                 <AddRoundedIcon sx={{fontSize: "2rem"}} />
                             </Button>
