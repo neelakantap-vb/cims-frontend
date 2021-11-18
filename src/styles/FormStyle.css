@@ -34,12 +34,16 @@
     align-items: center;
 }
 
-#save-btn{
+#save-btn,#cancel-btn{
     position: absolute;
     top:0;
     right: 0;
     margin-right: 20%;
     margin-top: 1%;
+}
+
+#cancel-btn{
+    margin-right: 28%;
 }
 
 .form-body{
@@ -57,17 +61,3 @@
     border: 1px solid rgb(216, 213, 213);
 }
 
-/* middle 4 fields */
-.align-form-fields,.right-float-fields{
-    width: 48%;
-    float: left;
-    display: flex;
-    margin-top: .5%;
-    margin-bottom: .5%;
-    justify-content: left;
-    flex-direction: column;
-}
-
-.right-float-fields{
-    margin-left: 1%;
-}
