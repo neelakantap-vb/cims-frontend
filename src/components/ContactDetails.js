@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Box, Tab, Grid, TextField, Button, MenuItem, Menu, FormControl } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon } from '@mui/icons-material';
+import { KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
+         AddRounded as AddRoundedIcon
+} from '@mui/icons-material';
 
 export default function ContactDetails() {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -80,19 +82,32 @@ export default function ContactDetails() {
     });
 
     const [n, setN] = useState(Object.keys(formData.contacts).length);
+    const [addOthers, setAddOthers] = useState(true);
     
     const setformvalue=(e)=>{
         let new_form = {...formData}
         e.target.id?
         new_form['contacts'][e.target.name][e.target.id] = e.target.value:
         new_form[e.target.name] = e.target.value;
-        console.log(Object.keys(new_form.contacts).length);
         if (new_form.contacts[`otherContact${n-3}`].email!=='' && Object.keys(new_form.contacts).length <= n){
-            new_form['contacts'] = {...new_form['contacts'], [`otherContact${n-2}`]:{...contactSchema}};
-            setN(Object.keys(new_form.contacts).length);
+            setAddOthers(false)
         }
-        setformData(new_form);
+        else{
+            setAddOthers(true)
+        }
+        setformData(new_form)
     }
+
+    const handleAddOthers = () => {
+        let new_form = {...formData}
+        new_form['contacts'] = {...new_form['contacts'], [`otherContact${n-2}`]:{...contactSchema}};
+        const d = {label: `Other Contact ${n-2}`, title: `otherContact${n-2}`}
+        setformData(new_form)
+        setContacts([...initialContacts, {...d}]);
+        setValue(d.title);
+        setN(Object.keys(new_form.contacts).length);
+        setAddOthers(true)
+    };
 
     const fields = [
         {id: 'title', label: 'Title'},
@@ -105,7 +120,7 @@ export default function ContactDetails() {
     const inputField = fields.map(field => {
         const data = formData.contacts[value];
         return(
-            <Grid item xs={4} key={`${value}.${field.id}`}>
+            <Grid item xs={12} sm={6} md={4} key={`${value}.${field.id}`}>
                 <TextField 
                     variant="outlined"
                     label={field.label}
@@ -115,58 +130,72 @@ export default function ContactDetails() {
                     onChange={setformvalue}
                     fullWidth
                     size="small"
+                    autocomplete="none"
                 />
             </Grid>
         );
     });
 
     const tabs = contacts.map(contact =>
-        <Tab key={contact.title} label={contact.label} value={contact.title}/>
+        <Tab key={contact.title} label={contact.label} value={contact.title} sx={{textTransform: 'none'}}/>
     );
 
     return(
         <Box sx={{width: '100%', typography: 'body1'}}>
             <TabContext value={value}>
                 <Box sx={{ borderTop: 2, borderBottom: 2, borderColor: 'divider' }}>
-                    <TabList onChange={(e, newValue) => setValue(newValue)}>
+                    <TabList variant='scrollable' onChange={(e, newValue) => setValue(newValue)}>
                         {tabs}
-                        <FormControl size="small">
-                            <Button 
-                                size="small" 
-                                id="othersBtn" 
+                        <Grid>
+                            <FormControl size="small">
+                                <Button 
+                                    size="small" 
+                                    id="othersBtn" 
+                                    sx={{color: 'gray', borderColor: 'white'}} 
+                                    variant="outlined"
+                                    aria-haspopup="true"
+                                    aria-controls="others"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    <KeyboardArrowDownRoundedIcon sx={{fontSize: "2.5rem"}}/>
+                                </Button>
+                                <Menu
+                                    id='others'
+                                    sx={{maxHeight: 230, overflow: 'visible'}}
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'othersBtn',
+                                    }}
+                                >
+                                    {[...Array(n-3)].map((e, i) => {
+                                        return(
+                                            <MenuItem
+                                                key={i+1}
+                                                data-label={`Other Contact ${i+1}`}
+                                                data-title={`otherContact${i+1}`}
+                                                onClick={handleOthers}
+                                            >
+                                            {`Other Contact ${i+1}`}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Menu>
+                            </FormControl>
+                        </Grid>
+                        <Grid container>
+                            <Button
+                                id="addOthersBtn" 
                                 sx={{color: 'gray', borderColor: 'white'}} 
-                                variant="outlined"
-                                aria-haspopup="true"
-                                aria-controls="others"
-                                aria-expanded={open ? 'true' : undefined}
-                                onClick={handleClick}
+                                variant={addOthers?"contained":"outlined"}
+                                onClick={handleAddOthers}
+                                disabled={addOthers}
                             >
-                                <KeyboardArrowDownRoundedIcon sx={{fontSize: "2.5rem"}}/>
+                                <AddRoundedIcon sx={{fontSize: "2rem"}} />
                             </Button>
-                            <Menu
-                                id='others'
-                                sx={{maxHeight: 230, overflow: 'visible'}}
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                MenuListProps={{
-                                    'aria-labelledby': 'othersBtn',
-                                }}
-                            >
-                                {[...Array(n-3)].map((e, i) => {
-                                    return(
-                                        <MenuItem
-                                            key={i+1}
-                                            data-label={`Other Contact ${i+1}`}
-                                            data-title={`otherContact${i+1}`}
-                                            onClick={handleOthers}
-                                        >
-                                        {`Other Contact ${i+1}`}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Menu>
-                        </FormControl>
+                        </Grid>
                     </TabList>
                 </Box>
                 <TabPanel value={value}>
