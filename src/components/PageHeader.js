@@ -10,7 +10,7 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
     menu: {
-        marginTop: '5rem',
+        marginTop: '1rem',
     },
     userAdmin: {
         textAlign: 'right',
@@ -59,7 +59,7 @@ export default function PageHeader() {
                         </Typography>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" style={{backgroundColor: 'chocolate'}}>
+                        <Button href='/create' variant="contained" style={{backgroundColor: 'chocolate'}}>
                             Create a customer
                         </Button>
                         <FormControl size="small" sx={{ minWidth: 120, margin: '0 2.5rem 0 1rem' }}>

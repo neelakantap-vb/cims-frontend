@@ -52,7 +52,7 @@ export default function Header() {
 
     const leftMenu = (
         <div>
-            <Link to="/">
+            {/* <Link to="/">
                 <HomeRoundedIcon sx={iconStyle} />
             </Link>
             <Link to="/">
@@ -60,7 +60,7 @@ export default function Header() {
             </Link>
             <Link to="/">
                 <ArrowForwardRoundedIcon sx={iconStyle} />
-            </Link>
+            </Link> */}
         </div>
     );
 

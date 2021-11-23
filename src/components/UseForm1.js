@@ -19,26 +19,19 @@ const initialContacts = [
 ];
 
 const fields = [
-    {id: 'title', label: 'Title *'},
-    {id: 'firstName', label: 'First name *'},
-    {id: 'lastName', label: 'Last name *'},
-    {id: 'email', label: 'Email address *'},
-    {id: 'contactNumber', label: 'Contact Number *'},
+    {id: 'title', label: 'Title'},
+    {id: 'firstName', label: 'First name'},
+    {id: 'lastName', label: 'Last name'},
+    {id: 'email', label: 'Email address'},
+    {id: 'contactNumber', label: 'Contact Number'},
     {id: 'otherContactNumber', label: 'Other contact number'}
 ];
 
 export default function UseForm() {
-
+    console.log(useSelector(state => state));
     const formData = useSelector(state => state.form);
     const errors = useSelector(state => state.errors);
     const dispatch = useDispatch();
-
-    const [value, setValue] = useState('primaryContact');
-
-    const [contacts, setContacts] = useState(initialContacts);
-    const [n, setN] = useState(Object.keys(formData.contacts).length);
-    const [addOthers, setAddOthers] = useState(false);
-
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -54,6 +47,12 @@ export default function UseForm() {
         setValue(d.title);
         handleClose();
     };
+
+    const [value, setValue] = useState('primaryContact');
+
+    const [contacts, setContacts] = useState(initialContacts);
+    const [n, setN] = useState(Object.keys(formData.contacts).length);
+    const [addOthers, setAddOthers] = useState(false);
 
     // Handel errors
     const validate = (type='', fieldValues) => {
@@ -156,8 +155,8 @@ export default function UseForm() {
             validate(e.target.name, { [e.target.id]: e.target.value });
         if (e.target.id && e.target.name !== 'primaryContact' && e.target.name !== 'secondaryContact')
             validateOptional(e.target.name, new_form['contacts'][e.target.name])
-        // if (!e.target.id)
-        //     validateBasic({ [e.target.name]: e.target.value })
+        if (!e.target.id)
+            validateBasic({ [e.target.name]: e.target.value })
 
         if (validateOptional('tertiaryContact', new_form['contacts']['tertiaryContact'])){
             if(n===3 ? true : (validateOptional(`otherContact${n-3}`, new_form.contacts[`otherContact${n-3}`]) &&
@@ -188,6 +187,37 @@ export default function UseForm() {
         setAddOthers(false)
     };
 
+    // Sam
+    const [store,setStore] = useState("")
+    const [login,setLogin] = useState(true)
+
+    const authStore= ()=>{
+
+        let store = localStorage.getItem('authorization')
+        if(store && login)
+        {setLogin(true)
+         setStore(store) 
+         console.log(store)  
+        }   
+    }
+
+    const submitForm = async() =>{
+        console.log(formData)
+        // let token = "Bearer "+ store
+        // const token = localStorage.getItem('authorization')
+        // try {
+        //     await axios.post('http://localhost:4000/cims', {formData},  
+        //                                             {headers: {
+        //                                                 'authorization': `bearer ${token}`
+        //                                                 }}) 
+        //     .then(res=>console.log(res))   
+        // } catch (error) {
+        //     console.log(error)
+        // }      
+    }
+
+    //end Sam
+
     return {
         fields,
         formData,
@@ -203,6 +233,9 @@ export default function UseForm() {
         handleOthers,
         addOthers,
         handleAddOthers,
-        errors
+        errors,
+
+        authStore,
+        submitForm
     }
 }
