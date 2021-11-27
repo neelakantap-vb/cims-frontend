@@ -7,6 +7,9 @@ import {Button,
         Select,
         Typography} from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { resetForm } from "../store";
 
 const useStyles = makeStyles({
     menu: {
@@ -23,6 +26,7 @@ const useStyles = makeStyles({
 });
 
 export default function PageHeader() {
+    const dispatch = useDispatch();
     const [sortBy, setSortBy] = useState("");
     const classes = useStyles();
     const values = ["None",
@@ -39,6 +43,10 @@ export default function PageHeader() {
         } else {
             setSortBy(e.target.value);
         }
+    };
+
+    const handleCreate = () => {
+        dispatch(resetForm());
     };
 
     return(
@@ -59,9 +67,11 @@ export default function PageHeader() {
                         </Typography>
                     </Grid>
                     <Grid item>
-                        <Button href='/create' variant="contained" style={{backgroundColor: 'chocolate'}}>
-                            Create a customer
-                        </Button>
+                        <Link to='/create' style={{ textDecoration: 'none' }}>
+                            <Button onClick={handleCreate} variant="contained" style={{backgroundColor: 'chocolate'}}>
+                                Create a customer
+                            </Button>
+                        </Link>
                         <FormControl size="small" sx={{ minWidth: 120, margin: '0 2.5rem 0 1rem' }}>
                             <InputLabel id="sortBy">sort by</InputLabel>
                             <Select labelId="sortBy"

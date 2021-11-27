@@ -1,7 +1,8 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 // import axios from 'axios'
 import { useSelector,useDispatch } from "react-redux";
-import { createForm, setErrors } from "../store";
+// new
+import { createForm, setErrors, setCcode, setCountries, setLoc } from "../store";
 
 const contactSchema = {
     title:"",
@@ -18,6 +19,7 @@ const initialContacts = [
     {label: 'Tertiary Contact', title: 'tertiaryContact'}
 ];
 
+// new
 const fields = [
     {id: 'title', label: 'Title'},
     {id: 'firstName', label: 'First name'},
@@ -27,10 +29,26 @@ const fields = [
     {id: 'otherContactNumber', label: 'Other contact number'}
 ];
 
+// new
+const addressFields = [
+    {name: 'addressLine1', label: 'Address Line 1 *'},
+    {name: 'addressLine2', label: 'Address Line 2'},
+    {name: 'country', label: 'Country *'},
+    {name: 'pincode', label: 'Postal/Pin Code *'},
+    {name: 'state', label: 'State *'},
+    {name: 'district', label: 'District *'},
+    {name: 'city', label: 'City *'},
+    {name: 'landmark', label: 'Landmark'}
+];
+
 export default function UseForm() {
     console.log(useSelector(state => state));
     const formData = useSelector(state => state.form);
     const errors = useSelector(state => state.errors);
+
+// new
+    const ccode = useSelector(state => state.ccode);
+    const loc = useSelector(state => state.loc);
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -40,7 +58,18 @@ export default function UseForm() {
     const handleClose = () => {
         setAnchorEl(null);
     }; 
-    
+
+// new
+    async function fetchData() {
+        const response = await fetch('http://localhost:4000/countries');
+        const data = await response.json();
+        dispatch(setCountries(data))
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
     const handleOthers = (e) => {
         const d = e.currentTarget.dataset;
         setContacts([...initialContacts, {...d}]);
@@ -87,24 +116,28 @@ export default function UseForm() {
         }
         dispatch(setErrors({...temp}));
     }
-
+// new
     const validateOptional = (type='', fieldValues) => {
         let temp = { ...errors }
         if (fieldValues.title || fieldValues.firstName || fieldValues.lastName ||
             fieldValues.email || fieldValues.contactNumber || fieldValues.otherContactNumber){
-                temp['contacts'][type].title = fieldValues.title ? "" : "This field is required."
-                temp['contacts'][type].firstName = fieldValues.firstName ? "" : "This field is required."
-                temp['contacts'][type].lastName = fieldValues.lastName ? "" : "This field is required."
-                temp['contacts'][type].email = fieldValues.email ? "" : "This field is required."
+                // temp['contacts'][type].title = fieldValues.title ? "" : "This field is required."
+                // temp['contacts'][type].firstName = fieldValues.firstName ? "" : "This field is required."
+                // temp['contacts'][type].lastName = fieldValues.lastName ? "" : "This field is required."
+                // temp['contacts'][type].email = fieldValues.email ? "" : "This field is required."
                 if (fieldValues.email)
                     temp['contacts'][type].email = (/^[^@\s]+@[^@\s]+\.[^@\s]{2,4}$/).test(fieldValues.email)
                     ? ""
                     : "Email is not valid."
-                temp['contacts'][type].contactNumber = fieldValues.contactNumber ? "" : "This field is required."
+                else
+                    temp['contacts'][type].email = ''
+                // temp['contacts'][type].contactNumber = fieldValues.contactNumber ? "" : "This field is required."
                 if (fieldValues.contactNumber)
                     temp['contacts'][type].contactNumber = (/^[6-9][0-9]{9}$/).test(fieldValues.contactNumber)
                     ? ""
                     : "Contact number is not valid."
+                else
+                    temp['contacts'][type].contactNumber = ''
                 if (fieldValues.otherContactNumber)
                     temp['contacts'][type].otherContactNumber = (/^[6-9][0-9]{9}$/).test(fieldValues.otherContactNumber)
                     ? ""
@@ -122,9 +155,10 @@ export default function UseForm() {
         }
         dispatch(setErrors({...temp}));
         return Object.values(temp['contacts'][type]).every((x) => x === "") &&
-            formData['contacts'][type].email !== ""
+        fields.map((field) => field.id === 'otherContactNumber' ? true :
+        formData['contacts'][type][field.id] !=='').every((x) => x)
     }
-
+//new
     const validateBasic = (fieldValues) => {
         let temp = { ...errors }
         if ("designation" in fieldValues)
@@ -137,20 +171,79 @@ export default function UseForm() {
             temp.domain = fieldValues.domain ? "" : "This field is required."
         if ("baselocation" in fieldValues)
             temp.baselocation = fieldValues.baselocation ? "" : "This field is required."
-        if ("companyaddress" in fieldValues)
-            temp.companyaddress = fieldValues.companyaddress ? "" : "This field is required."
+            if ("addressLine1" in fieldValues)
+            temp.addressLine1 = fieldValues.addressLine1 ? "" : "This field is required."
+        if ("pincode" in fieldValues){
+            temp.pincode = fieldValues.pincode ? "" : "This field is required."
+            if (fieldValues.pincode){
+                temp.pincode = (/^.{2,}$/).test(fieldValues.pincode)
+                ? ""
+                : "Pincode should have minimum 2 characters."
+                if (errors.state)
+                    temp.state = temp.pincode ? "This field is required." : ""
+                if (errors.district)
+                    temp.district = temp.pincode ? "This field is required." : ""
+                if (errors.city)
+                    temp.city = temp.pincode ? "This field is required." : ""
+            }
+        }
+        if ("country" in fieldValues){
+            temp.country = fieldValues.country || formData.country ? "" : "This field is required."
+        }
+        if ("state" in fieldValues)
+            temp.state = fieldValues.state ? "" : "This field is required."
+        if ("district" in fieldValues)
+            temp.district = fieldValues.district || formData.district ? "" : "This field is required."
+        if ("city" in fieldValues)
+            temp.city = fieldValues.city || formData.city ? "" : "This field is required."
         setTimeout(() => {
             dispatch(setErrors({...temp}));
         }, 100)
     }
-
+//new
+    const handelInvalidPincode = () => {
+        let new_form = {...formData}
+        new_form['city'] = '';
+        new_form['district'] = '';
+        new_form['state'] = '';
+        new_form['pincode'] = '';
+        dispatch(createForm(new_form));
+    }
     // End handel errors
-    
+//new
+    const getAddressByPincode = async(pincode) => {
+        console.log("In getAddressByPincode")
+        try {
+            await axios.get('http://localhost:4000/location',
+                {headers: {
+                    'pincode': pincode,
+                    'country' : ccode
+                }}
+            ).then(res=>{
+                if(res.data.status)
+                    dispatch(setLoc(res.data))
+                else if(!res.data.status && formData.city ===''){
+                    window.alert("Invalid Pincode!")
+                    handelInvalidPincode()
+                }
+            })
+            
+        } catch (error){
+            console.log(error)
+        }
+        console.log("End getAddressByPincode")
+    }
+//new  
     const setformvalue=(e)=>{
         let new_form = {...formData}
         e.target.id?
         new_form['contacts'][e.target.name][e.target.id] = e.target.value:
         new_form[e.target.name] = e.target.value;
+        if (e.target.name === 'pincode'){
+            new_form['city'] = '';
+            new_form['district'] = '';
+            new_form['state'] = '';
+        }
         if (e.target.name === 'primaryContact' || e.target.name === 'secondaryContact')
             validate(e.target.name, { [e.target.id]: e.target.value });
         if (e.target.id && e.target.name !== 'primaryContact' && e.target.name !== 'secondaryContact')
@@ -172,7 +265,33 @@ export default function UseForm() {
         }
         dispatch(createForm(new_form));
     }
-
+//new
+    const handelAddressOnBlur = (e) => {
+        setformvalue(e);
+        const data = e.target.value;
+        if (data.length > 1 && formData.pincode !== '' && errors.pincode === ''){
+            getAddressByPincode(data);
+        }
+    }
+//new
+    const handelCountry = (e) => {
+        let new_form = {...formData}
+        const data = e.target.value;
+        const name = e.target.name;
+        if (name === 'country'){
+            dispatch(setCcode(data.split('-')[1]));
+            new_form['city'] = '';
+            new_form['district'] = '';
+            new_form['state'] = '';
+            new_form['pincode'] = '';
+        }
+        new_form[name] = data;
+        if (name === 'district' && data !== ''){
+            new_form['state'] = loc.state;
+            new_form['city'] = loc['districts'][data][0];
+        }
+        dispatch(createForm(new_form));
+    }
     const handleAddOthers = () => {
         let new_form = {...formData}
         new_form['contacts'] = {...new_form['contacts'], [`otherContact${n-2}`]:{...contactSchema}};
@@ -236,6 +355,9 @@ export default function UseForm() {
         errors,
 
         authStore,
-        submitForm
+        submitForm,
+        addressFields,
+        handelCountry,
+        handelAddressOnBlur,
     }
 }

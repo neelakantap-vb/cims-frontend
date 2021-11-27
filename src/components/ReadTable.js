@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,12 +9,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
-// import axios from 'axios'
+import axios from 'axios'
 import '../styles/FormStyles.css'
-
-
-import { useSelector } from "react-redux";
-
 
 function EditButton() {
 
@@ -48,32 +44,26 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-// function createData(id, company_uid, company_name, primary_contact, action ) {
-//   return { id, company_uid, company_name, primary_contact, action };
-// }
-
 function CIMSTable() {
 
-    const client = useSelector(state => state.form);
-  
-//   useEffect(async()=>{
-//     await axios.post('http://localhost:4000/login')
-//     .then(data=>data)
-//     .then(tokenObject=>{
-//       console.log(tokenObject.data.Token)
-//       localStorage.setItem('authorization',tokenObject.data.Token)
-//     })
+  const [clientsList,setclientsList] = useState([])
 
-//     const token = localStorage.getItem('authorization')
-//     await axios.get('http://localhost:4000/cims', {headers: {
-//                                                       'authorization': `bearer ${token}`
-//                                                       }})
-//     .then(data=>data)
-//     .then(list=>{
-//       setclientsList(list.data)
-//       console.log(list.data)
-//     })
-//   },[])
+  useEffect(async()=>{
+    await axios.post('http://localhost:4000/login')
+    .then(data=>data)
+    .then(tokenObject=>{
+      localStorage.setItem('authorization',tokenObject.data.Token)
+    })
+
+    const token = localStorage.getItem('authorization')
+    await axios.get('http://localhost:4000/cims', {headers: {
+                                                      'authorization': `bearer ${token}`
+                                                      }})
+    .then(data=>data)
+    .then(list=>{
+      setclientsList(list.data)
+    })
+  },[])
 
   
   return (
@@ -91,17 +81,17 @@ function CIMSTable() {
             </TableRow>
             </TableHead>
             <TableBody>
-            {/* {clientsList.map((client,idx) => ( */}
+            {clientsList.map((client,idx) => (
                 <StyledTableRow key={client.id}>
                 <StyledTableCell component="th" scope="client">
-                    {/* {idx+1} */}
+                    {idx+1}
                 </StyledTableCell>
                 <StyledTableCell align="left">{client._id}</StyledTableCell>
                 <StyledTableCell align="left">{client.brandname}</StyledTableCell>
                 <StyledTableCell align="left">{client.contacts.primaryContact.title}</StyledTableCell>
                 <StyledTableCell align="left">{EditButton()}</StyledTableCell>
                 </StyledTableRow>
-            {/* ))} */}
+            ))}
             </TableBody>
         </Table>
         </TableContainer>

@@ -13,6 +13,7 @@ import { KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
 } from '@mui/icons-material';
 import '../styles/FormStyles.css'
 import UseForm from './UseForm1';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles({  
     field1:{
@@ -26,10 +27,15 @@ const useStyles = makeStyles({
         width:'78%',
         margin:'1%'
     },
+    formControl: {
+        width: '100%'
+    }
 
 })
 
 function CreateForm(){
+
+    const countries = useSelector(state => state.countries);
 
     const {
         fields,
@@ -49,7 +55,10 @@ function CreateForm(){
         errors,
 
         authStore,
-        submitForm
+        submitForm,
+        addressFields,
+        handelCountry,
+        handelAddressOnBlur,
     } = UseForm();
 
     // useEffect(() =>{
@@ -84,6 +93,103 @@ function CreateForm(){
         );
     });
 
+    const loc = useSelector(state => state.loc);
+    const addressField = addressFields.map(field => {
+        const gridStyle = field.name === 'addressLine1' || field.name === 'addressLine2' ? 12 : 6
+        if (field.name === 'country'){
+            return(
+                <Grid item xs={12} sm={gridStyle}>
+                    <FormControl size="small" className={classes.formControl}>
+                        <InputLabel id="country">{field.label}</InputLabel>
+                        <Select labelId="country"
+                            name={field.name}
+                            value={formData[field.name]}
+                            label={field.label}
+                            onChange={handelCountry}
+                            onBlur={handelCountry}
+                        >
+                            {Object.keys(countries).map((key) => (
+                                <MenuItem
+                                    key={key}
+                                    value={`${countries[key].name}-${countries[key].code}`}
+                                >
+                                {countries[key].name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            );
+        }
+        if (field.name === 'district' && formData.pincode !== '' && Object.keys(loc['districts']).length>1){
+            return(
+                <Grid item xs={12} sm={gridStyle}>
+                    <FormControl size="small" className={classes.formControl}>
+                        <InputLabel id="district">{field.label}</InputLabel>
+                        <Select labelId="district"
+                            name={field.name}
+                            value={formData[field.name]}
+                            label={field.label}
+                            onChange={handelCountry}
+                            onBlur={handelCountry}
+                        >
+                            {Object.keys(loc['districts']).map((key) => (
+                                <MenuItem
+                                    key={key}
+                                    value={key}
+                                >
+                                {key}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            );
+        }
+        if (field.name === 'city' && formData.district !== '' && formData.pincode !== '' && loc['districts'][formData['district']].length>1){
+            return(
+                <Grid item xs={12} sm={gridStyle}>
+                    <FormControl size="small" className={classes.formControl}>
+                        <InputLabel id="city">{field.label}</InputLabel>
+                        <Select labelId="city"
+                            name={field.name}
+                            value={formData[field.name]}
+                            label={field.label}
+                            onChange={handelCountry}
+                            onBlur={handelCountry}
+                        >
+                            {loc['districts'][formData['district']].map((dist) => (
+                                <MenuItem
+                                    key={dist}
+                                    value={dist}
+                                >
+                                {dist}
+                                </MenuItem>
+                            )) || ""}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            );
+        }
+        return(
+            <Grid item xs={12} sm={gridStyle}>
+                <TextField
+                    className={classes.field3}
+                    label={field.label}
+                    variant="outlined"
+                    name={field.name}
+                    fullWidth
+                    size="small"
+                    value={formData[field.name]}
+                    onChange={(e)=>{setformvalue(e)}}
+                    onBlur={handelAddressOnBlur}
+                    {...(errors[field.name] && 
+                    { error: true, helperText: errors[field.name] })}
+                />
+                
+            </Grid>
+        );
+    });
 
     const tabs = contacts.map(contact =>
         <Tab key={contact.title} label={contact.label} value={contact.title} sx={{textTransform: 'none'}}/>
@@ -259,25 +365,12 @@ function CreateForm(){
                         </div>
 
                         </Grid>
-                        <Grid item md={4}>
+                        <Grid item xs={12}>
                         <Typography className={classes.lables}>
                             Complete address of the company
                         </Typography>
-                        <TextField
-                            className={classes.field3}
-                            label="Enter location"
-                            variant="outlined"
-                            name="companyaddress"
-                            fullWidth
-                            required
-                            size="small"
-                            onChange={(e)=>{setformvalue(e)}}
-                            onBlur={(e)=>{setformvalue(e)}}
-                            {...(errors.companyaddress && 
-                            { error: true, helperText: errors.companyaddress })}
-                        />
-                        
                         </Grid>
+                        {addressField}
                         <Link to="/">
                             <Button
                             
