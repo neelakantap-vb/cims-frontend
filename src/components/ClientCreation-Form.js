@@ -12,7 +12,7 @@ import { KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
     AddRounded as AddRoundedIcon
 } from '@mui/icons-material';
 import '../styles/FormStyles.css'
-import UseForm from './UseForm1';
+import UseForm from './UseForm';
 import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles({  
@@ -59,11 +59,12 @@ function CreateForm(){
         addressFields,
         handelCountry,
         handelAddressOnBlur,
+        validateOnSubmit
     } = UseForm();
 
-    // useEffect(() =>{
-    //     authStore()
-    // },[])
+    useEffect(() =>{
+        authStore()
+    },[])
 
     const classes = useStyles()
     const url = "http://localhost:4000/cims"
@@ -84,7 +85,6 @@ function CreateForm(){
                     onChange={setformvalue}
                     onBlur={setformvalue}
                     fullWidth
-                    {...(field.id !== 'otherContactNumber'? {required:true} : '')}
                     size="small"
                     autoComplete="none"
                     {...(errors['contacts'][value][field.id] && { error: true, helperText: errors['contacts'][value][field.id] })}
@@ -257,7 +257,7 @@ function CreateForm(){
                 <div className="form-body">    
                     <form>
                         <Grid container spacing={2}>
-                            <Grid item md={4}>
+                            <Grid item xs={12}>
                         <Typography className={classes.lables}>
                             Legal Name of the entity
                         </Typography>
@@ -276,7 +276,7 @@ function CreateForm(){
                             
                         />
                         </Grid>
-                        <Grid item md={4}>
+                        <Grid item xs={12} md={6}>
                         <div className="align-form-fields">
                             <Typography>
                                 Brand Name
@@ -297,7 +297,7 @@ function CreateForm(){
                         </div>
 
                         </Grid>
-                        <Grid item md={4}>
+                        <Grid item xs={12} md={6}>
                         <div className="right-float-fields">
                             <Typography>
                                 Domain/Sector
@@ -318,7 +318,7 @@ function CreateForm(){
                         </div>
 
                         </Grid>
-                        <Grid item md={4}>
+                        <Grid item xs={12} md={6}>
                         <div className="align-form-fields">
                             <Typography>
                                 Base Location
@@ -339,7 +339,7 @@ function CreateForm(){
                         </div>
 
                         </Grid>
-                        <Grid item md={4}>
+                        <Grid item xs={12} md={6}>
                         <div className="right-float-fields">
                             <Typography>
                                 Active Client
@@ -388,6 +388,7 @@ function CreateForm(){
                         variant="contained"
                         color="success"
                         id="save-btn"
+                        disabled={validateOnSubmit() ? false : true}
                         className={classes.button}
                         >
                         Save
